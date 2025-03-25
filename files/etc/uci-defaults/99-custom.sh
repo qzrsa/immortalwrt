@@ -17,7 +17,7 @@ if [ ! -f "$SETTINGS_FILE" ]; then
     echo "PPPoE settings file not found. Skipping." >> $LOGFILE
 else
    # 读取pppoe信息($enable_pppoe、$pppoe_account、$pppoe_password)
-   . "$SETTINGS_FILE"
+   。 "$SETTINGS_FILE"
 fi
 
 # 计算网卡数量
@@ -101,7 +101,7 @@ uci commit
 
 # 设置编译作者信息
 FILE_PATH="/etc/openwrt_release"
-NEW_DESCRIPTION="Compiled by wukongdaily"
+NEW_DESCRIPTION="Compiled by 丶曲終人散ゞ"
 sed -i "s/DISTRIB_DESCRIPTION='[^']*'/DISTRIB_DESCRIPTION='$NEW_DESCRIPTION'/" "$FILE_PATH"
 
 exit 0

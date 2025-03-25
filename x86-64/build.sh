@@ -39,6 +39,8 @@ PACKAGES="$PACKAGES openssh-sftp-server"
 
 PACKAGES="$PACKAGES luci-app-alist"
 PACKAGES="$PACKAGES luci-i18n-alist-zh-cn"
+PACKAGES="$PACKAGES luci-app-ddns"
+PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn"
 
 
 

@@ -37,7 +37,10 @@ PACKAGES="$PACKAGES luci-i18n-homeproxy-zh-cn"
 PACKAGES="$PACKAGES openssh-sftp-server"
 
 PACKAGES="$PACKAGES luci-app-netdata"
+PACKAGES="$PACKAGES luci-i18n-netdata-zh-cn"
 PACKAGES="$PACKAGES luci-app-alist"
+PACKAGES="$PACKAGES luci-i18n-alist-zh-cn"
+
 
 
 # 增加几个必备组件 方便用户安装iStore

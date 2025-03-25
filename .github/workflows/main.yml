@@ -1,0 +1,81 @@
+# 定义工作流的名称，会在 GitHub Actions 界面显示
+name: Build ImmortalWrt Firmware
+
+# 定义工作流的触发条件
+on:
+  # 当 main 分支有推送操作时触发工作流
+  push:
+    branches:
+      - main  # 当 main 分支有推送时触发
+  # 定时任务，按照 cron 表达式指定的时间触发工作流
+  schedule:
+    - cron: '0 0 * * 0'  # 每周日凌晨 0 点触发
+
+# 定义工作流中的作业
+jobs:
+  # 定义一个名为 build 的作业
+  build:
+    # 指定作业运行的环境，这里使用最新的 Ubuntu 系统
+    runs-on: ubuntu-latest
+
+    # 定义作业中的步骤
+    steps:
+      # 第一步：检出代码
+      - name: Checkout
+        # 使用 GitHub 官方提供的 actions/checkout 插件，版本为 v3
+        uses: actions/checkout@v3
+
+      # 第二步：设置编译环境
+      - name: Set up environment
+        # 执行一系列命令来安装编译所需的依赖包
+        run: |
+          # 更新 apt 包管理器的软件源列表
+          sudo apt-get update
+          # 安装编译所需的各种依赖包
+          sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
+            gettext git java-propose-classpath libelf-dev libncurses5-dev \
+            libncursesw5-dev libssl-dev python3 python3-distutils python3-setuptools \
+            python3-dev rsync subversion swig time unzip wget xmlto zlib1g-dev
+
+      # 第三步：克隆 ImmortalWrt 源代码
+      - name: Clone ImmortalWrt source
+        # 执行一系列命令来克隆代码并更新 feeds
+        run: |
+          # 克隆 ImmortalWrt 的 GitHub 仓库
+          git clone https://github.com/immortalwrt/immortalwrt.git
+          # 进入克隆下来的代码目录
+          cd immortalwrt
+          # 更新 feeds 源
+          ./scripts/feeds update -a
+          # 安装 feeds 中的所有包
+          ./scripts/feeds install -a
+
+      # 第四步：配置编译选项
+      - name: Configure
+        # 执行一系列命令来进行编译配置
+        run: |
+          # 进入 ImmortalWrt 代码目录
+          cd immortalwrt
+          # 使用默认配置进行编译配置，这里可以根据需求修改
+          # 这里可以根据你的需求进行配置
+          make defconfig
+
+      # 第五步：编译固件
+      - name: Build
+        # 执行编译命令
+        run: |
+          # 进入 ImmortalWrt 代码目录
+          cd immortalwrt
+          # 使用多核并行编译，如果失败则使用单线程详细编译
+          make -j$(nproc) || make -j1 V=s
+
+      # 第六步：上传编译好的固件
+      - name: Upload firmware
+        # 使用 GitHub 官方提供的 actions/upload-artifact 插件，版本为 v3
+        uses: actions/upload-artifact@v3
+        # 配置插件的参数
+        with:
+          # 定义上传的工件名称
+          name: immortalwrt-firmware
+          # 指定要上传的文件路径，这里是编译生成的固件所在目录
+          path: immortalwrt/bin    

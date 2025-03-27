@@ -77,9 +77,10 @@ jobs:
       
       - name: Generate Firmware SHA-256
         run: |
-          cp ${{ github.workspace }}/bin/targets/x86/64/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz ${{ github.workspace }}
-          sha256sum immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz > immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
-          sha256sum -c immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
+          EXT4_IMAGE="immortalwrt-23.05.4-x86-64-generic-ext4-combined-efi.img.gz"
+          cp ${{ github.workspace }}/bin/targets/x86/64/${EXT4_IMAGE} ${{ github.workspace }}
+          sha256sum ${EXT4_IMAGE} > ${EXT4_IMAGE}.sha256
+          sha256sum -c ${EXT4_IMAGE}.sha256
 
       - name: Create info
         run: |
@@ -96,8 +97,8 @@ jobs:
           tag_name: build-x86-64-immortalwrt-23.05.4
           body_path: ${{ github.workspace }}/info.md
           files: |
-            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz
-            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
+            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-ext4-combined-efi.img.gz
+            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-ext4-combined-efi.img.gz.sha256
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

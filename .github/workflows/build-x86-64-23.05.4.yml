@@ -77,10 +77,11 @@ jobs:
       
       - name: Generate Firmware SHA-256
         run: |
-          cp ${{ github.workspace }}/bin/targets/x86/64/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz ${{ github.workspace }}
-          sha256sum immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz > immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
-          sha256sum -c immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
-
+          timestamp=$(date +%Y%m%d%H%M%S)
+          new_img_name="immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi-${timestamp}.img.gz"
+          cp ${{ github.workspace }}/bin/targets/x86/64/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz ${{ github.workspace }}/${new_img_name}
+          sha256sum ${{ github.workspace }}/${new_img_name} > ${{ github.workspace }}/${new_img_name}.sha256
+          sha256sum -c ${{ github.workspace }}/${new_img_name}.sha256
       - name: Create info
         run: |
           if [ "${{ github.event.inputs.include_docker }}" == "yes" ]; then
@@ -93,11 +94,11 @@ jobs:
       - name: Upload ImmortWrt as release assets
         uses: softprops/action-gh-release@v2.2.1
         with:
-          tag_name: build-x86-64-immortalwrt-23.05.4
+          tag_name: build-x86-64-immortalwrt-23.05.4-${{ github.run_id }}
           body_path: ${{ github.workspace }}/info.md
           files: |
-            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz
-            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi.img.gz.sha256
+            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi-${{ github.run_id }}.img.gz
+            ${{ github.workspace }}/immortalwrt-23.05.4-x86-64-generic-squashfs-combined-efi-${{ github.run_id }}.img.gz.sha256
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
